@@ -2,24 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FingerprintJS Test</title>
-  <script src="https://openfpcdn.io/fingerprintjs/v3"></script>
+  <title>FingerprintJS on Button Click</title>
 </head>
 <body>
-  <h1>FingerprintJS Visitor ID Test</h1>
-  <p>Your unique visitor ID will appear below:</p>
-  <div id="visitorId" style="font-weight: bold;"></div>
+  <h2>Click the button to get your fingerprint:</h2>
+  <button onclick="scanFingerprint()">Scan Fingerprint</button>
+  <p id="fingerprint">Fingerprint will appear here.</p>
 
+  <!-- Load FingerprintJS from CDN -->
+  <script src="https://openfpcdn.io/fingerprintjs/v3"></script>
   <script>
-    // Load FingerprintJS
-    FingerprintJS.load().then(fp => {
-      // Get the visitor identifier
-      fp.get().then(result => {
-        const visitorId = result.visitorId;
-        document.getElementById('visitorId').textContent = visitorId;
-        console.log('Fingerprint components:', result.components);
-      });
+    let fpPromise;
+
+    // Preload the agent to improve performance
+    window.addEventListener('DOMContentLoaded', () => {
+      fpPromise = FingerprintJS.load();
     });
+
+    // Function triggered on button click
+    function scanFingerprint() {
+      document.getElementById("fingerprint").textContent = "Scanning...";
+      fpPromise.then(fp => {
+        fp.get().then(result => {
+          const visitorId = result.visitorId;
+          document.getElementById("fingerprint").textContent = "Fingerprint: " + visitorId;
+          console.log("Full fingerprint data:", result);
+        });
+      });
+    }
   </script>
 </body>
 </html>
