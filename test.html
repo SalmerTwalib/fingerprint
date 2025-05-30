@@ -2,34 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FingerprintJS on Button Click</title>
+  <title>Fingerprint Login (WebAuthn)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      text-align: center;
+      padding-top: 100px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <h2>Click the button to get your fingerprint:</h2>
-  <button onclick="scanFingerprint()">Scan Fingerprint</button>
-  <p id="fingerprint">Fingerprint will appear here.</p>
 
-  <!-- Load FingerprintJS from CDN -->
-  <script src="https://openfpcdn.io/fingerprintjs/v3"></script>
+  <h1>Fingerprint Login Demo</h1>
+  <button onclick="startFingerprintLogin()">Login with Fingerprint</button>
+
   <script>
-    let fpPromise;
+    async function startFingerprintLogin() {
+      if (!window.PublicKeyCredential) {
+        alert("WebAuthn is not supported on this browser.");
+        return;
+      }
 
-    // Preload the agent to improve performance
-    window.addEventListener('DOMContentLoaded', () => {
-      fpPromise = FingerprintJS.load();
-    });
+      const publicKey = {
+        challenge: Uint8Array.from("randomchallenge123456", c => c.charCodeAt(0)),
+        rp: {
+          name: "Fingerprint Demo"
+        },
+        user: {
+          id: Uint8Array.from("user123", c => c.charCodeAt(0)),
+          name: "user@example.com",
+          displayName: "Example User"
+        },
+        pubKeyCredParams: [
+          { type: "public-key", alg: -7 } // ES256
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform", // Use built-in (fingerprint, face ID)
+          userVerification: "required"
+        },
+        timeout: 60000,
+        attestation: "none"
+      };
 
-    // Function triggered on button click
-    function scanFingerprint() {
-      document.getElementById("fingerprint").textContent = "Scanning...";
-      fpPromise.then(fp => {
-        fp.get().then(result => {
-          const visitorId = result.visitorId;
-          document.getElementById("fingerprint").textContent = "Fingerprint: " + visitorId;
-          console.log("Full fingerprint data:", result);
-        });
-      });
+      try {
+        const credential = await navigator.credentials.create({ publicKey });
+        alert("Fingerprint authentication succeeded!");
+        console.log("Credential:", credential);
+      } catch (err) {
+        console.error("Authentication failed:", err);
+        alert("Fingerprint authentication failed or cancelled.");
+      }
     }
   </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fingerprint Login (WebAuthn)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      text-align: center;
+      padding-top: 100px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fingerprint Login Demo</h1>
+  <button onclick="startFingerprintLogin()">Login with Fingerprint</button>
+
+  <script>
+    async function startFingerprintLogin() {
+      if (!window.PublicKeyCredential) {
+        alert("WebAuthn is not supported on this browser.");
+        return;
+      }
+
+      const publicKey = {
+        challenge: Uint8Array.from("randomchallenge123456", c => c.charCodeAt(0)),
+        rp: {
+          name: "Fingerprint Demo"
+        },
+        user: {
+          id: Uint8Array.from("user123", c => c.charCodeAt(0)),
+          name: "user@example.com",
+          displayName: "Example User"
+        },
+        pubKeyCredParams: [
+          { type: "public-key", alg: -7 } // ES256
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform", // Use built-in (fingerprint, face ID)
+          userVerification: "required"
+        },
+        timeout: 60000,
+        attestation: "none"
+      };
+
+      try {
+        const credential = await navigator.credentials.create({ publicKey });
+        alert("Fingerprint authentication succeeded!");
+        console.log("Credential:", credential);
+      } catch (err) {
+        console.error("Authentication failed:", err);
+        alert("Fingerprint authentication failed or cancelled.");
+      }
+    }
+  </script>
+
 </body>
 </html>
