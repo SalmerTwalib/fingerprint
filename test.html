@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FingerprintJS Test</title>
+  <script src="https://openfpcdn.io/fingerprintjs/v3"></script>
+</head>
+<body>
+  <h1>FingerprintJS Visitor ID Test</h1>
+  <p>Your unique visitor ID will appear below:</p>
+  <div id="visitorId" style="font-weight: bold;"></div>
+
+  <script>
+    // Load FingerprintJS
+    FingerprintJS.load().then(fp => {
+      // Get the visitor identifier
+      fp.get().then(result => {
+        const visitorId = result.visitorId;
+        document.getElementById('visitorId').textContent = visitorId;
+        console.log('Fingerprint components:', result.components);
+      });
+    });
+  </script>
+</body>
+</html>
